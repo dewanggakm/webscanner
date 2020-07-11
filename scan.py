@@ -49,43 +49,45 @@ def revip():
 def subdo():
 	os.system("clear")
 	jumlah = []
-	print("Subdomain Scanner")
-	print("without http/https!!!")
-	sub = raw_input("Input Domain : ")
+	sub = raw_input("Masukan Domain : ")
 	if sub =="":
-		print("Harus Diisi !")
-		time.sleep(1)
+		print("Please Input the Domain....")
+		time.sleep(3)
 		main()
 	else:
-		print("Wait...")
-		time.sleep(2)
-		subdo = requests.get("https://api.hackertarget.com/hostsearch/?q="+sub).text
-		print("list : ")
-		print(subdo)
-		sub = open("subdo.txt", "w")
-		sub.write(subdo)
-		sub.close()
-		print("File Saved : subdo.txt")
-		raw_input("Press enter returns to menu ...");main()
+		try:
+			url = ("https://api.indoxploit.or.id/domain/"+sub)
+			subdo = requests.get(url).json()
+			ambil_data = subdo['data']['subdomains']
+			for i in ambil_data:
+				print(i)
+				sub = open("subdo.txt", "a")
+				sub.write(i+"\n")
+			sub.close()
+			print("\nSaved : subdo.txt")
+			raw_input("Press enter returns to menu..."),main()
+		except:
+			exit()
 def check():
 	os.system("clear")
 	dom = raw_input("Input Domain : ")
 	f = open(dom,"r")
-	z = f.read().split("\n")
-	try:
-		for dom in z :
-			web = requests.get("http://"+dom)
-			web.raise_for_status()
-			print(dom+" ==> ", web.status_code)
-	except requests.exceptions.InvalidURL as erri:
-			print("Invalid URL:", erri)
-	except requests.exceptions.HTTPError as errh:
-	   		print("Http Error:",errh)
-	except requests.exceptions.ConnectionError as errc:
-		   	print("Error Connecting:",errc)
-	except requests.exceptions.Timeout as errt:
-		   	print("Timeout Error:",errt)
-	except requests.exceptions.RequestException as err:
-	    	print("OOps: Something Else",err)
+	z = f.read().splitlines()
+	for dom in z:
+		try:
+			web = requests.get("http://"+dom).status_code
+			stts = str(web)
+			print(dom+" > "+stts)
+		except requests.exceptions.InvalidURL:
+			print(dom+" > Invalid URL")
+		except requests.exceptions.HTTPError:
+			print(dom+" > Http Error")
+		except requests.exceptions.ConnectionError:
+			print(dom+" > Error Connecting")
+		except requests.exceptions.Timeout:
+			print(dom+" > Timeout Error")
+		except requests.exceptions.RequestException:
+			print(dom+" > OOps: Something Else")
+	raw_input("\nDONE!!! Press enter returns to menu"),main()
 
 main()
